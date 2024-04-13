@@ -23,6 +23,7 @@ export async function POST(request:Request){
 
     const existingUserByEmail=await UserModel.findOne({email})
 
+        //generating verification code
     const verifyCode=Math.floor(100000+Math.random()*900000).toString()
 
     if(existingUserByEmail){
@@ -42,7 +43,7 @@ export async function POST(request:Request){
         }
         
     }
-    else{
+    else{/*if the user has fresh email */
         const hashedPassword=await bcryptjs.hash(password,10)
         /*in below code we are setting expiry time to 1 hour and because of new keyword we can use the variable */
         const expiryDate=new Date()
@@ -60,7 +61,8 @@ export async function POST(request:Request){
         })
         await newUser.save()
     }
-        /*sending email to user*/
+
+        /*sending email to user , */
         const emailResponse=await sendVerificationEmail(
             email,
             verifyCode,
